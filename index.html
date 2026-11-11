@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f97316">
+<title>উজ্জ্বল টেলিকম বিকাশের হিসাব</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+tailwind.config = {theme:{extend:{colors:{brand:{50:'#fff7ed',100:'#ffedd5',500:'#f97316',600:'#ea580c',700:'#c2410c'}},fontFamily:{sans:['Hind Siliguri','sans-serif']}}}};
+</script>
+<style>
+.hidden{display:none!important}
+body{font-family:'Hind Siliguri',sans-serif;overflow-x:hidden;min-height:100vh;background:radial-gradient(circle at 12% 18%,#fed7aa 0,transparent 32%),radial-gradient(circle at 88% 12%,#c7d2fe 0,transparent 34%),radial-gradient(circle at 60% 92%,#a7f3d0 0,transparent 36%),#eef2f7;background-attachment:fixed}
+.glass-dark{background:linear-gradient(135deg,rgba(15,23,42,.92),rgba(30,41,59,.8));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}
+.card{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(255,255,255,.4));backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(226,232,240,.85);border-radius:1.1rem;box-shadow:0 12px 35px rgba(15,23,42,.055),inset 0 1px 0 rgba(255,255,255,.9);padding:1rem}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.6) 50%,transparent 60%);transform:translateX(-120%);pointer-events:none}
+.card:hover::after{animation:sweep 1s ease}
+@keyframes sweep{to{transform:translateX(120%)}}
+.modal-box{background:rgba(255,255,255,.94)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.inp{width:100%;padding:.6rem .85rem;border:1px solid #e2e8f0;border-radius:.75rem;font-size:.875rem;background:#fff}
+.inp:focus{outline:none;border-color:#f97316;box-shadow:0 0 0 3px #ffedd5}
+.lbl{display:block;font-size:.75rem;font-weight:600;margin-bottom:.3rem;color:#334155}
+.btn{padding:.6rem 1.1rem;border-radius:.75rem;font-size:.875rem;font-weight:600;background:#f97316;color:#fff;box-shadow:0 4px 0 #c2410c;transition:transform .1s,box-shadow .1s;cursor:pointer}
+.btn:hover{background:#ea580c}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #c2410c}
+.btn.sm{padding:.35rem .75rem;font-size:.75rem;border-radius:.6rem;box-shadow:0 3px 0 #c2410c}
+.btn-ghost{padding:.6rem 1.1rem;border-radius:.75rem;font-size:.875rem;border:1px solid #e2e8f0;background:#fff;cursor:pointer}
+.btn-ghost.sm{padding:.35rem .75rem;font-size:.75rem;border-radius:.6rem}
+.chip{display:inline-block;padding:.15rem .6rem;border-radius:999px;font-size:.75rem;background:#fff;border:1px solid #e2e8f0;box-shadow:0 2px 0 #cbd5e1}
+.chip.bk{background:#01babd;border-color:#01babd;color:#fff}
+.chip.ng{background:#f26a21;border-color:#f26a21;color:#fff}
+.chip.good{color:#047857}
+.menu-btn{padding:.5rem 1.05rem;border-radius:999px;font-size:.875rem;font-weight:600;background:#fff;border:1px solid #e2e8f0;box-shadow:0 3px 0 #cbd5e1;cursor:pointer;white-space:nowrap}
+.menu-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #cbd5e1}
+.menu-btn.on{background:#f97316;border-color:#f97316;color:#fff;box-shadow:0 4px 0 #c2410c;transform:translateY(-1px)}
+.menu-btn.on.bk{background:#01babd;border-color:#01babd;box-shadow:0 4px 0 #017f82}
+.menu-btn.on.ng{background:#f26a21;border-color:#f26a21;box-shadow:0 4px 0 #b84a12}
+.menu-btn.on.mc{background:#e2136e;border-color:#e2136e;box-shadow:0 4px 0 #9d0c4b}
+.menu-btn.on.mg{background:#b7430f;border-color:#b7430f;box-shadow:0 4px 0 #7a2c09}
+.rise{animation:rise .6s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.modal-in{animation:modalIn .4s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes modalIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th,td{padding:.55rem .5rem;text-align:left;border-bottom:1px solid #eef2f7;white-space:nowrap}
+th{font-size:.75rem;color:#64748b;font-weight:600;background:rgba(248,250,252,.9)}
+td.r,th.r{text-align:right}
+tbody tr:hover{background:#f8fafc}
+.good{color:#047857}.warnc{color:#b45309}.badc{color:#dc2626}
+#clockTxt{font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{body *{visibility:hidden}}
+</style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col pb-10">
+
+<!-- ================= লগইন ================= -->
+<div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+  <div class="card rise w-full max-w-sm">
+    <div class="flex items-center gap-3 mb-4">
+      <img src="data:image/png;base64,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" alt="bKash" class="w-11 h-11 rounded-xl bg-white p-1 object-contain shadow">
+      <div><h2 class="font-bold text-lg leading-tight">উজ্জ্বল টেলিকম বিকাশের হিসাব</h2><small class="text-slate-500">লগইন করো</small></div>
+    </div>
+    <p class="text-sm text-slate-500 mb-4">হিসাব দেখতে ও অনলাইনে সেভ করতে লগইন করা লাগবে।</p>
+    <label class="lbl" for="loginEmail">ইমেইল</label>
+    <input id="loginEmail" class="inp mb-3" type="email" autocomplete="username">
+    <label class="lbl" for="loginPass">পাসওয়ার্ড</label>
+    <input id="loginPass" class="inp mb-4" type="password" autocomplete="current-password">
+    <button id="loginBtn" class="btn w-full" type="button">লগইন</button>
+    <p id="loginErr" class="text-sm text-red-600 mt-3 min-h-[1.2em]"></p>
+  </div>
+</div>
+
+<!-- ================= অ্যাপ ================= -->
+<div id="app" class="hidden flex-col min-h-screen">
+  <header class="glass-dark text-white px-4 py-3 flex items-center justify-between gap-3 flex-wrap sticky top-0 z-30">
+    <div class="flex items-center gap-3">
+      <img src="data:image/png;base64,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" alt="bKash" class="w-10 h-10 rounded-xl bg-white p-1 object-contain shadow">
+      <div>
+        <h1 class="font-bold leading-tight">উজ্জ্বল টেলিকম বিকাশের হিসাব</h1>
+        <small class="text-slate-300">এজেন্ট ও পার্সোনাল সিম হিসাব</small>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <span id="clockTxt" class="text-xs text-slate-300"></span>
+      <span id="status" class="text-xs text-slate-300"></span>
+      <button id="bBackup" class="btn-ghost sm text-slate-800" data-act="backup" type="button"><i class="fa-solid fa-download"></i> ব্যাকআপ</button>
+      <button id="bLogout" class="btn-ghost sm text-slate-800" data-act="logout" type="button"><i class="fa-solid fa-right-from-bracket"></i> লগআউট</button>
+    </div>
+  </header>
+
+  <nav class="sticky top-[62px] z-20 px-4 py-3 bg-white/60 backdrop-blur border-b border-white/70">
+    <div class="max-w-6xl mx-auto flex gap-2 overflow-x-auto no-scrollbar">
+      <button class="menu-btn bk" data-act="view" data-view="bkash" type="button">বিকাশ এজেন্ট</button>
+      <button class="menu-btn ng" data-act="view" data-view="nagad" type="button">নগদ এজেন্ট</button>
+      <button class="menu-btn mc" data-act="view" data-view="personal" type="button">বিকাশ পার্সোনাল</button>
+      <button class="menu-btn mg" data-act="view" data-view="merchant" type="button">বিকাশ মার্চেন্ট</button>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl w-full mx-auto p-4 space-y-5">
+
+    <!-- ========== এজেন্ট ভিউ (বিকাশ / নগদ) ========== -->
+    <section id="view-agent" class="space-y-5">
+      <div class="flex items-center gap-3">
+        <h2 id="agTitle" class="text-xl font-bold">বিকাশ এজেন্ট</h2>
+        <span id="agBadge" class="chip bk">বিকাশ</span>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="card rise"><div class="text-xs text-slate-500">এজেন্টের হাতের ক্যাশ</div><div id="aCash" class="text-2xl font-bold mt-1">৳ ০</div></div>
+        <div class="card rise" style="animation-delay:.05s"><div class="text-xs text-slate-500">ফ্লোট ব্যালেন্স</div><div id="aFloat" class="text-2xl font-bold mt-1">৳ ০</div></div>
+        <div class="card rise" style="animation-delay:.1s"><div class="text-xs text-slate-500">আজকের কমিশন</div><div id="aCom" class="text-2xl font-bold mt-1 good">৳ ০</div></div>
+        <div class="card rise" style="animation-delay:.15s"><div class="text-xs text-slate-500">আজকের হিসাব</div><div id="aSub" class="text-sm mt-2 text-slate-600">০ টি লেনদেন</div></div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-5">
+        <div class="space-y-5">
+          <div class="card">
+            <h3 class="font-bold mb-3">নতুন লেনদেন</h3>
+            <form id="af-form" autocomplete="off" class="space-y-3">
+              <div><label class="lbl" for="af-type">লেনদেনের ধরন</label><select id="af-type" class="inp"></select></div>
+              <div id="af-divMethod" class="hidden"><label class="lbl" for="af-method">মাধ্যম</label>
+                <select id="af-method" class="inp"><option value="cash">ক্যাশ</option><option value="bank">ব্যাংক</option></select></div>
+              <div id="af-divNum"><label class="lbl" id="af-lNum" for="af-num">মোবাইল নম্বর</label><input id="af-num" class="inp" inputmode="numeric" maxlength="14" placeholder="01XXXXXXXXX"></div>
+              <div id="af-divName"><label class="lbl" id="af-lName" for="af-name">নাম (ঐচ্ছিক)</label><input id="af-name" class="inp" placeholder="গ্রাহক"></div>
+              <div><label class="lbl" for="af-amt">টাকার পরিমাণ</label><input id="af-amt" class="inp" inputmode="decimal" min="1" step="any" type="number" placeholder="০"></div>
+              <div id="af-divCom"><label class="lbl" for="af-com">কমিশন / লাভ</label><input id="af-com" class="inp" inputmode="decimal" step="any" type="number" placeholder="অটো"></div>
+              <div><label class="lbl" for="af-trx">ট্রানজেকশন আইডি</label><input id="af-trx" class="inp" placeholder="TrxID"></div>
+              <div><label class="lbl" for="af-note">মন্তব্য</label><input id="af-note" class="inp" placeholder="মন্তব্য"></div>
+              <button class="btn w-full" type="submit">লেনদেন সেভ করুন</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3 class="font-bold mb-3">বর্তমান ব্যালেন্স সেট করুন</h3>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="lbl" for="ab-cash">হাতে ক্যাশ</label><input id="ab-cash" class="inp" type="number" step="any"></div>
+              <div><label class="lbl" for="ab-float">ফ্লোট</label><input id="ab-float" class="inp" type="number" step="any"></div>
+            </div>
+            <button id="ab-save" class="btn-ghost w-full mt-3" data-act="agBal" type="button">ব্যালেন্স সেভ</button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-5">
+          <div class="card">
+            <div class="flex flex-wrap gap-2 mb-3">
+              <input id="al-date" type="date" class="inp w-auto">
+              <select id="al-type" class="inp w-auto"></select>
+              <input id="al-q" class="inp flex-1 min-w-[140px]" placeholder="খুঁজুন (নম্বর, নাম, আইডি)">
+            </div>
+            <div class="tbl max-h-[430px] overflow-auto rounded-xl">
+              <table>
+                <thead><tr><th>সময়</th><th>ধরন</th><th>বিবরণ</th><th class="r">টাকা</th><th class="r">কমিশন</th><th></th></tr></thead>
+                <tbody id="al-body"></tbody>
+              </table>
+            </div>
+            <div id="al-sum" class="flex gap-2 flex-wrap mt-3"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="font-bold mb-2">গত ৭ দিনের কমিশন</h3>
+            <div id="at-chart" class="flex items-end gap-2 h-40 mt-2"></div>
+          </div>
+
+          <div class="card">
+            <div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+              <h3 class="font-bold">মাসিক হিসাব</h3>
+              <input id="am-month" type="month" class="inp w-auto">
+            </div>
+            <div class="tbl">
+              <table>
+                <thead><tr><th>এজেন্ট</th><th class="r">ক্যাশ ইন</th><th class="r">ক্যাশ আউট</th><th class="r">রিচার্জ ও বিল</th><th class="r">কমিশন</th></tr></thead>
+                <tbody id="am-body"></tbody>
+              </table>
+            </div>
+            <p id="am-total" class="text-sm text-slate-600 mt-3"></p>
+          </div>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="font-bold cursor-pointer">এজেন্টের সেটিংস</summary>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+          <div><label class="lbl" for="as-oc">ওপেনিং ক্যাশ</label><input id="as-oc" class="inp" type="number" step="any"></div>
+          <div><label class="lbl" for="as-of">ওপেনিং ফ্লোট</label><input id="as-of" class="inp" type="number" step="any"></div>
+          <div><label class="lbl" for="as-rin">ক্যাশ ইন কমিশন (প্রতি ১০০০)</label><input id="as-rin" class="inp" type="number" step="any"></div>
+          <div><label class="lbl" for="as-rout">ক্যাশ আউট কমিশন (প্রতি ১০০০)</label><input id="as-rout" class="inp" type="number" step="any"></div>
+        </div>
+        <button class="btn-ghost sm mt-4 text-red-600" data-act="agClear" type="button">এই এজেন্টের সব লেনদেন মুছুন</button>
+      </details>
+    </section>
+
+    <!-- ========== সিম ভিউ (পার্সোনাল / মার্চেন্ট) ========== -->
+    <section id="view-sims" class="hidden space-y-5">
+      <div class="flex items-center gap-3">
+        <h2 id="simTitle" class="text-xl font-bold">বিকাশ পার্সোনাল</h2>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="card rise"><div class="text-xs text-slate-500">মোট ব্যালেন্স</div><div id="sBal" class="text-2xl font-bold mt-1">৳ ০</div><div id="sSims" class="text-xs text-slate-500 mt-1">০ টি সিম</div></div>
+        <div class="card rise" style="animation-delay:.05s"><div class="text-xs text-slate-500">আজ সেন্ড মানি</div><div id="sSend" class="text-2xl font-bold mt-1">৳ ০</div></div>
+        <div class="card rise" style="animation-delay:.1s"><div class="text-xs text-slate-500">আজ রিসিভ মানি</div><div id="sRecv" class="text-2xl font-bold mt-1">৳ ০</div></div>
+        <div class="card rise" style="animation-delay:.15s"><div class="text-xs text-slate-500">এই মাসে ব্যবহৃত</div><div id="sMonth" class="text-2xl font-bold mt-1">৳ ০</div></div>
+        <div id="drawerCard" class="card rise" style="animation-delay:.2s"><div class="text-xs text-slate-500">ক্যাশ ড্রয়ার</div><div id="sDrawer" class="text-2xl font-bold mt-1">৳ ০</div></div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-5">
+        <div class="lg:col-span-1 card">
+          <h3 class="font-bold mb-3">নতুন লেনদেন</h3>
+          <form id="sf-form" autocomplete="off" class="space-y-3">
+            <div><label class="lbl" for="sf-date">তারিখ</label><input id="sf-date" type="date" class="inp"></div>
+            <div><label class="lbl" for="sf-sim">সিম</label><select id="sf-sim" class="inp"></select></div>
+            <div><label class="lbl" for="sf-type">ধরন</label><select id="sf-type" class="inp"></select></div>
+            <div id="sf-feeDiv"><label class="lbl" for="sf-fee">সেন্ড মানির চার্জ</label>
+              <select id="sf-fee" class="inp"><option value="5">৳ ৫ চার্জ</option><option value="10">৳ ১০ চার্জ</option><option value="bundle">বান্ডিল (চার্জ নেই)</option></select></div>
+            <div><label class="lbl" for="sf-amt">টাকা</label><input id="sf-amt" class="inp" inputmode="decimal" min="1" step="any" type="number"></div>
+            <div><label class="lbl" id="sf-lNum" for="sf-num">অপর নম্বর</label><input id="sf-num" class="inp" inputmode="numeric" type="tel" placeholder="খালি রাখলে র্যান্ডম নম্বর বসবে"></div>
+            <div><label class="lbl" for="sf-name">নাম</label><input id="sf-name" class="inp"></div>
+            <div><label class="lbl" for="sf-trx">ট্রানজেকশন আইডি</label><input id="sf-trx" class="inp"></div>
+            <div><label class="lbl" for="sf-note">মন্তব্য</label><input id="sf-note" class="inp"></div>
+            <p id="sf-warn" class="text-sm text-amber-600 min-h-[1.2em]"></p>
+            <button class="btn w-full" type="submit">লেনদেন সেভ করুন</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 space-y-5">
+          <div class="card">
+            <h3 class="font-bold mb-3">সিম তালিকা (আজকের হিসাব)</h3>
+            <div class="tbl">
+              <table>
+                <thead><tr><th>তারিখ</th><th>মোবাইল নম্বর</th><th class="r">সেন্ড মানি</th><th class="r">রিসিভ মানি</th><th class="r">ব্যালেন্স</th><th class="r">আজ বাকি</th><th class="r">মাসিক বরাদ্দ</th><th class="r">মাসে ব্যবহৃত</th><th class="r">মাসে বাকি</th><th></th></tr></thead>
+                <tbody id="st-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="flex flex-wrap gap-2 mb-3">
+              <input id="sl-date" type="date" class="inp w-auto">
+              <select id="sl-sim" class="inp w-auto"></select>
+              <select id="sl-type" class="inp w-auto"></select>
+            </div>
+            <div class="tbl max-h-[430px] overflow-auto rounded-xl">
+              <table>
+                <thead><tr><th>তারিখ</th><th>সিম</th><th>ধরন</th><th>নম্বর / আইডি</th><th class="r">টাকা</th><th></th></tr></thead>
+                <tbody id="sl-body"></tbody>
+              </table>
+            </div>
+            <div id="sl-sum" class="flex gap-2 flex-wrap mt-3"></div>
+          </div>
+
+          <div class="card">
+            <div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+              <h3 class="font-bold">মাসিক লিমিট</h3>
+              <input id="sm-month" type="month" class="inp w-auto">
+            </div>
+            <div class="tbl">
+              <table>
+                <thead><tr><th>মোবাইল নম্বর</th><th class="r">মাসিক বরাদ্দ</th><th class="r">ব্যবহৃত</th><th class="r">বাকি</th></tr></thead>
+                <tbody id="sm-body"></tbody>
+              </table>
+            </div>
+            <p id="sm-total" class="text-sm text-slate-600 mt-3"></p>
+          </div>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary class="font-bold cursor-pointer">সেটিংস</summary>
+        <div class="mt-4 space-y-5">
+
+          <div id="set-personal" class="space-y-4">
+            <div class="grid lg:grid-cols-2 gap-4">
+              <div><label class="lbl" for="st-personal">পার্সোনাল নম্বর (প্রতি লাইনে একটা)</label><textarea id="st-personal" class="inp" rows="4"></textarea></div>
+              <div><label class="lbl" for="st-nagad">নগদ (পার্সোনাল) নম্বর — মাসে ৳ ৩,০০,০০০, দৈনিক ৳ ৫০,০০০</label><textarea id="st-nagad" class="inp" rows="4"></textarea></div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div><label class="lbl" for="st-cap">পার্সোনালে দৈনিক রিসিভ সীমা</label><input id="st-cap" class="inp" type="number" step="any"></div>
+              <div><label class="lbl" for="st-drawer">ড্রয়ারে এখন কত টাকা আছে</label><input id="st-drawer" class="inp" type="number" step="any"></div>
+            </div>
+            <div>
+              <div class="lbl">যেসব ধরন মাসিক লিমিটে গোনা হবে</div>
+              <div id="st-cnt" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div>
+              <div class="lbl">বান্ডিল বাকি (ম্যানুয়াল) — মেয়াদ খালি রাখলে লেখা নেই ধরা হবে</div>
+              <div class="tbl"><table><thead><tr><th>নম্বর</th><th>বাকি বান্ডিল</th><th>মেয়াদ শেষ</th></tr></thead><tbody id="st-bundle"></tbody></table></div>
+            </div>
+          </div>
+
+          <div id="set-merchant" class="space-y-4 hidden">
+            <div><label class="lbl" for="st-merch">মার্চেন্ট (পেমেন্ট) নম্বর — প্রতি লাইনে একটা</label><textarea id="st-merch" class="inp" rows="3"></textarea></div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+              <div class="lbl mb-0">প্রতি নম্বরের হিসাব</div>
+              <button id="st-save" class="btn sm" data-act="saveSims" type="button">নম্বর সেভ</button>
+            </div>
+            <p class="text-xs text-slate-500 mb-2">"এই মাসে আগে যত পাঠিয়েছি" ঘরে অ্যাপে না লেখা আগের সব সেন্ড মানির মোট লিখো। এটা মাসিক লিমিট থেকে কাটবে। মাস বদলালে নিজে থেকে বাদ যাবে।</p>
+            <div class="tbl">
+              <table>
+                <thead><tr><th>নম্বর</th><th>ওপেনিং ব্যালেন্স</th><th>মাসিক লিমিট</th><th>দৈনিক বের হওয়া (মার্চেন্ট)</th><th>এই মাসে আগে যত পাঠিয়েছি</th></tr></thead>
+                <tbody id="st-set"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+</div>
+
+<!-- মোডাল -->
+<div id="modal" class="hidden fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4" data-act="closeModalBg">
+  <div class="card modal-box modal-in max-w-md w-full">
+    <div id="modalBody"></div>
+    <div class="text-right mt-4"><button class="btn sm" data-act="closeModal" type="button">বন্ধ করুন</button></div>
+  </div>
+</div>
+
+<script>
+/* ================= Supabase সেটিং =================
+   Supabase Dashboard → Project Settings → API থেকে এই দুইটি মান বসাও */
+const SUPABASE_URL = 'https://sferwjspbynyqrqrigs.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_LO1UWAz5x8KxohCimGSnYQ_iZAxpd2X';
+</script>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- constants ---------- */
+const AG_LIST = ['bkash','nagad'];
+const AG = {bkash:{n:'বিকাশ এজেন্ট',s:'বিকাশ'}, nagad:{n:'নগদ এজেন্ট',s:'নগদ'}};
+const A_TYPES = {cashin:'ক্যাশ ইন', cashout:'ক্যাশ আউট', recharge:'মোবাইল রিচার্জ', bill:'বিদ্যুৎ বিল', btbsend:'বিটুবি সেন্ড', btbrecv:'বিটুবি রিসিভ'};
+const A_DEF_RATES = {bkash:{cashin:3.75,cashout:4}, nagad:{cashin:4,cashout:4.1}};
+const S_TYPES = {
+  cashin:{n:'ক্যাশ ইন (এজেন্ট থেকে)',b:1,inc:true},
+  receive:{n:'রিসিভ মানি',b:1,inc:true},
+  send:{n:'সেন্ড মানি',b:-1},
+  cashout:{n:'ক্যাশ আউট (অন্য এজেন্ট)',b:-1},
+  payment:{n:'পেমেন্ট',b:-1},
+  bill:{n:'বিদ্যুৎ বিল',b:-1},
+  wifi:{n:'ওয়াইফাই বিল',b:-1},
+  bank:{n:'ব্যাংকে ট্রান্সফার',b:-1},
+  bundle:{n:'বান্ডিল কেনা (৫ সেন্ড মানি)',b:-1}
+};
+const CNT_LABEL = {send:'সেন্ড মানি',cashout:'ক্যাশ আউট',payment:'পেমেন্ট',bill:'বিদ্যুৎ বিল',wifi:'ওয়াইফাই বিল',bank:'ব্যাংকে ট্রান্সফার'};
+const DEFAULT_CNT = {send:true,cashout:false,payment:false,bill:false,wifi:false,bank:false};
+const DEF_PERSONAL_LIM = 300000, DEF_MERCH_LIM = 500000, DEF_MERCH_DOUT = 50000;
+const NAGAD_LIM = 300000, NAGAD_DAILY = 50000, DEF_DAILY_CAP = 50000;
+const MERCH_PRESET = {'01333540220':{lim:500000,dout:50000}, '01749419649':{lim:100000,dout:10000}};
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const money = n => (Math.round((+n||0)*100)/100).toLocaleString('en-US');
+const r2 = n => Math.round(n*100)/100;
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dkey = ts => { const d=new Date(ts); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); };
+const today = () => dkey(Date.now());
+const thisMonth = () => today().slice(0,7);
+const bdate = k => k.split('-').reverse().join('/');
+const tm = ts => new Date(ts).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+const uid = () => Date.now()+Math.floor(Math.random()*1000);
+const isBtb = t => t==='btbsend'||t==='btbrecv';
+const isCashT = t => t==='cashin'||t==='cashout';
+const isSend = t => t==='send';
+const isRecv = t => t==='receive';
+const isIn = t => !!(S_TYPES[t]&&S_TYPES[t].inc);
+const balClass = b => b>=50000?'good':(b>=20000?'warnc':'badc');
+const parseNums = t => { const out=[]; t.split(/[\s,]+/).map(x=>x.trim()).filter(x=>x.length>=8).forEach(n=>{ if(out.indexOf(n)<0) out.push(n) }); return out; };
+const addDays = (k,n) => { const d=new Date(k+'T00:00:00'); d.setDate(d.getDate()+n); return dkey(d.getTime()); };
+const randBd = () => { const p=['013','014','015','016','017','018','019']; let s=p[Math.floor(Math.random()*p.length)]; for(let i=0;i<8;i++) s+=Math.floor(Math.random()*10); return s; };
+
+function setStatus(msg, err){
+  const el=$('status'); if(!el) return;
+  el.textContent=msg; el.className='text-xs '+(err?'text-red-300':'text-slate-300');
+}
+
+/* ---------- state ---------- */
+let S = null, sb = null, user = null, saveTimer = null, dirty = false;
+let curAg = 'bkash', curKind = 'personal', aComTouched = false;
+
+function defaults(){
+  return {
+    ag: {bkash:{oCash:0,oFloat:0}, nagad:{oCash:0,oFloat:0}},
+    rates: JSON.parse(JSON.stringify(A_DEF_RATES)),
+    atx: [],
+    sims: [
+      {num:'01333540220',kind:'merchant',prov:'bkash',open:0,lim:500000,dout:50000},
+      {num:'01749419649',kind:'merchant',prov:'bkash',open:0,lim:100000,dout:10000}
+    ],
+    dailyCap: DEF_DAILY_CAP,
+    cnt: JSON.parse(JSON.stringify(DEFAULT_CNT)),
+    stx: [],
+    drawer: 0
+  };
+}
+function normalize(o){
+  o = o || {};
+  o.ag = o.ag || {}; o.rates = o.rates || {}; o.atx = o.atx || []; o.stx = o.stx || [];
+  o.sims = o.sims || []; o.cnt = o.cnt || {};
+  AG_LIST.forEach(g => {
+    o.ag[g] = Object.assign({oCash:0,oFloat:0}, o.ag[g]||{});
+    o.rates[g] = Object.assign({}, A_DEF_RATES[g], o.rates[g]||{});
+  });
+  for (const k in DEFAULT_CNT) if (o.cnt[k]==null) o.cnt[k] = DEFAULT_CNT[k];
+  if (o.dailyCap==null) o.dailyCap = DEF_DAILY_CAP;
+  if (o.drawer==null) o.drawer = 0;
+  o.sims.forEach(s => {
+    if (!s.kind) s.kind = 'personal';
+    if (!s.prov) s.prov = 'bkash';
+    if (s.open==null) s.open = 0;
+    if (s.lim==null) s.lim = s.kind==='merchant' ? DEF_MERCH_LIM : (s.prov==='nagad' ? NAGAD_LIM : DEF_PERSONAL_LIM);
+    if (s.dout==null) s.dout = s.kind==='merchant' ? DEF_MERCH_DOUT : 0;
+  });
+  return o;
+}
+
+/* ---------- cloud (Supabase) ---------- */
+function save(){
+  if (!S) return;
+  dirty = true;
+  setStatus('সেভ হচ্ছে…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(pushNow, 400);
+}
+async function pushNow(){
+  if (!sb || !user || !S) return;
+  clearTimeout(saveTimer);
+  const { error } = await sb.from('hisab_state').upsert({
+    user_id: user.id, state: S, updated_at: new Date().toISOString()
+  });
+  if (error) setStatus('অনলাইনে সেভ হয়নি: '+error.message, true);
+  else { dirty = false; setStatus('সব সেভ হয়েছে'); }
+}
+async function loadState(){
+  const { data, error } = await sb.from('hisab_state').select('state').eq('user_id', user.id).maybeSingle();
+  if (error) { setStatus('লোড হয়নি: '+error.message, true); S = normalize(defaults()); return; }
+  S = data && data.state ? normalize(data.state) : normalize(defaults());
+  if (!data) save();
+}
+
+/* ---------- agent calculations ---------- */
+function aEffect(x){
+  const a=x.amt, c=x.com||0; let cash=0, fl=0;
+  if (x.type==='cashin'||x.type==='recharge'||x.type==='bill'){ cash=a; fl=-a+c; }
+  else if (x.type==='cashout'){ cash=-a; fl=a+c; }
+  else if (x.type==='btbsend'){ fl=-a; cash = x.method==='bank' ? 0 : a; }
+  else if (x.type==='btbrecv'){ fl=a; cash = x.method==='bank' ? 0 : -a; }
+  return {cash, fl};
+}
+function aBal(ag){
+  const o=S.ag[ag]; let cash=+o.oCash||0, fl=+o.oFloat||0;
+  S.atx.forEach(x => { if (x.agent===ag){ const e=aEffect(x); cash+=e.cash; fl+=e.fl; } });
+  return {cash, fl};
+}
+function aRate(t){ return S.rates[curAg][t]; }
+function aAdjust(){
+  const t=$('af-type').value, btb=isBtb(t);
+  $('af-divMethod').classList.toggle('hidden', !btb);
+  $('af-divNum').classList.toggle('hidden', btb);
+  $('af-divName').classList.toggle('hidden', btb);
+  $('af-divCom').classList.toggle('hidden', btb);
+  $('af-lNum').textContent = t==='bill' ? 'বিলের নম্বর' : 'মোবাইল নম্বর';
+  $('af-lName').textContent = t==='bill' ? 'গ্রাহকের নাম (ঐচ্ছিক)' : 'নাম (ঐচ্ছিক)';
+  aAutoCom();
+}
+function aAutoCom(){
+  const t=$('af-type').value, a=parseFloat($('af-amt').value), com=$('af-com');
+  if (isCashT(t)){
+    com.placeholder='অটো';
+    if (!aComTouched) com.value = a>0 ? r2(a/1000*aRate(t)) : '';
+  } else {
+    com.placeholder='ম্যানুয়াল';
+    if (!aComTouched) com.value='';
+  }
+}
+function aList(){
+  const d=$('al-date').value, ty=$('al-type').value, q=$('al-q').value.trim().toLowerCase();
+  const list = S.atx.filter(x =>
+    x.agent===curAg && (!d||dkey(x.ts)===d) && (!ty||x.type===ty) &&
+    (!q || (x.num+' '+x.name+' '+x.trx+' '+x.note).toLowerCase().indexOf(q)>-1)
+  ).sort((a,b)=>b.ts-a.ts);
+  $('al-body').innerHTML = list.length ? list.map(x => {
+    const bt = isBtb(x.type) ? ' ('+(x.method==='bank'?'ব্যাংক':'ক্যাশ')+')' : '';
+    const info = esc(x.num) + (x.name?' <small>('+esc(x.name)+')</small>':'') +
+      (x.trx?'<br><small>আইডি: '+esc(x.trx)+'</small>':'') + (x.note?'<br><small>'+esc(x.note)+'</small>':'');
+    return '<tr><td>'+tm(x.ts)+'</td><td><span class="chip">'+A_TYPES[x.type]+bt+'</span></td><td>'+info+'</td>'+
+      '<td class="r">'+money(x.amt)+'</td><td class="r good">'+money(x.com)+'</td>'+
+      '<td class="r"><button class="btn-ghost sm" data-act="adel" data-id="'+x.id+'" type="button">✕</button></td></tr>';
+  }).join('') : '<tr><td colspan="6" class="text-center text-slate-500 py-6">কোনো লেনদেন নেই</td></tr>';
+  const tAmt = list.reduce((s,x)=>s+x.amt,0), tCom = list.reduce((s,x)=>s+x.com,0);
+  $('al-sum').innerHTML = '<span class="chip">মোট ৳ '+money(tAmt)+'</span> <span class="chip good">মোট কমিশন ৳ '+money(tCom)+'</span>';
+}
+function aMonthly(){
+  const m=$('am-month').value||thisMonth();
+  const r={cin:[0,0], cout:[0,0], oth:[0,0], com:0};
+  S.atx.forEach(x => {
+    if (x.agent!==curAg || dkey(x.ts).slice(0,7)!==m) return;
+    if (x.type==='cashin') r.cin=[r.cin[0]+1, r.cin[1]+x.amt];
+    else if (x.type==='cashout') r.cout=[r.cout[0]+1, r.cout[1]+x.amt];
+    else if (x.type==='recharge'||x.type==='bill') r.oth=[r.oth[0]+1, r.oth[1]+x.amt];
+    r.com += x.com;
+  });
+  const cell = p => p[0]+' টি · ৳'+money(p[1]);
+  $('am-body').innerHTML = '<tr><td><span class="chip '+curAg+'">'+AG[curAg].n+'</span></td>'+
+    '<td class="r">'+cell(r.cin)+'</td><td class="r">'+cell(r.cout)+'</td><td class="r">'+cell(r.oth)+'</td>'+
+    '<td class="r good">৳ '+money(r.com)+'</td></tr>';
+  $('am-total').textContent = 'এই মাসের কমিশন ইনকাম: ৳ '+money(r.com);
+}
+function aChart(){
+  const days=[];
+  for (let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(dkey(d.getTime())); }
+  const vals = days.map(k => S.atx.reduce((s,x)=> (x.agent===curAg && dkey(x.ts)===k) ? s+x.com : s, 0));
+  const mx = Math.max(1, ...vals);
+  $('at-chart').innerHTML = days.map((k,i) =>
+    '<div class="flex-1 h-full flex flex-col justify-end items-center text-xs text-slate-500">'+
+    '<small>'+money(vals[i])+'</small>'+
+    '<div class="w-full max-w-[38px] rounded-t-lg bg-gradient-to-t from-orange-500 to-amber-300 mt-1" style="height:'+Math.round(vals[i]/mx*100)+'%;min-height:4px"></div>'+
+    '<span class="mt-1">'+k.slice(8)+'/'+k.slice(5,7)+'</span></div>'
+  ).join('');
+}
+function renderAgent(){
+  if (!S) return;
+  const ag=curAg, b=aBal(ag), t=today();
+  $('agTitle').textContent = AG[ag].n;
+  $('agBadge').className = 'chip '+ag;
+  $('agBadge').textContent = AG[ag].s;
+  $('aCash').textContent = '৳ '+money(b.cash);
+  $('aFloat').textContent = '৳ '+money(b.fl);
+  const td = S.atx.filter(x => x.agent===ag && dkey(x.ts)===t);
+  $('aCom').textContent = '৳ '+money(td.reduce((s,x)=>s+x.com,0));
+  $('aSub').textContent = td.length+' টি লেনদেন · মোট ৳ '+money(td.reduce((s,x)=>s+x.amt,0));
+  aList(); aMonthly(); aChart();
+}
+function fillAgForms(){
+  const b=aBal(curAg), o=S.ag[curAg];
+  $('ab-cash').value = r2(b.cash);
+  $('ab-float').value = r2(b.fl);
+  $('as-oc').value = o.oCash;
+  $('as-of').value = o.oFloat;
+  $('as-rin').value = S.rates[curAg].cashin;
+  $('as-rout').value = S.rates[curAg].cashout;
+}
+function agSetBal(){
+  const ag=curAg, b=aBal(ag), o=S.ag[ag];
+  const cv=$('ab-cash').value, fv=$('ab-float').value;
+  if (cv!==''){ const c=parseFloat(cv); if (isNaN(c)){ alert('সঠিক টাকার পরিমাণ লিখুন'); return; } o.oCash = r2(c-(b.cash-(+o.oCash||0))); }
+  if (fv!==''){ const f=parseFloat(fv); if (isNaN(f)){ alert('সঠিক টাকার পরিমাণ লিখুন'); return; } o.oFloat = r2(f-(b.fl-(+o.oFloat||0))); }
+  save(); fillAgForms(); renderAgent();
+  alert(AG[ag].n+' এর ব্যালেন্স সেভ হয়েছে');
+}
+
+/* ---------- sim calculations ---------- */
+const kindSims = k => S.sims.filter(s => k==='merchant' ? s.kind==='merchant' : s.kind!=='merchant');
+const findSim = n => S.sims.find(s => s.num===n) || null;
+const isMerch = n => { const s=findSim(n); return !!(s && s.kind==='merchant'); };
+function effectOf(x){ return S_TYPES[x.type].b*x.amt - (x.fee||0); }
+function simBal(n){
+  const s=findSim(n); let b = s ? (+s.open||0) : 0;
+  S.stx.forEach(x => { if (x.sim===n) b += effectOf(x); });
+  return b;
+}
+function capOf(n){ const s=findSim(n); return s && s.prov==='nagad' ? NAGAD_DAILY : S.dailyCap; }
+function limitOf(n){ const s=findSim(n); return s ? (+s.lim||0) : DEF_PERSONAL_LIM; }
+function doutOf(n){ const s=findSim(n); return s ? (+s.dout||0) : 0; }
+function sumDay(n, date, pred){ let t=0; S.stx.forEach(x => { if (x.sim===n && x.date===date && pred(x.type)) t+=x.amt; }); return t; }
+function sumDayOut(n, date){ let t=0; S.stx.forEach(x => { if (x.sim===n && x.date===date && S.cnt[x.type]) t+=x.amt; }); return t; }
+function monthTx(n, m){ let t=0; S.stx.forEach(x => { if (x.sim===n && x.date.slice(0,7)===m && S.cnt[x.type]) t+=x.amt; }); return t; }
+function sumMonth(n, m){
+  const s=findSim(n); let base=0;
+  if (s && s.base && s.base.m===m) base = +s.base.used||0;
+  return monthTx(n,m) + base;
+}
+function warnings(n, t, a, date, fee){
+  const w=[];
+  const bal = simBal(n) + S_TYPES[t].b*a - (+fee||0);
+  if (bal<0) w.push('ব্যালেন্স মাইনাস হয়ে যাবে: ৳ '+money(bal));
+  if (isIn(t) && !isMerch(n)){
+    const tin = sumDay(n, date, isIn) + a;
+    if (tin > capOf(n)) w.push('এই সিমের দৈনিক রিসিভ সীমা ৳ '+money(capOf(n))+' ছাড়িয়ে যাবে (মোট হবে ৳ '+money(tin)+')');
+  }
+  if (S.cnt[t]){
+    if (isMerch(n) && doutOf(n)>0){
+      const d = sumDayOut(n, date) + a;
+      if (d > doutOf(n)) w.push('এই মার্চেন্টের দৈনিক বের হওয়ার সীমা ৳ '+money(doutOf(n))+' ছাড়িয়ে যাবে (মোট হবে ৳ '+money(d)+')');
+    }
+    const used = sumMonth(n, date.slice(0,7)) + a, lim = limitOf(n);
+    if (used > lim) w.push('মাসিক লিমিট ৳ '+money(lim)+' ছাড়িয়ে যাবে (মোট হবে ৳ '+money(used)+')');
+  }
+  return w;
+}
+function bundleInfo(n, asOf){
+  const s=findSim(n), bm = s && s.bm, cut = bm ? (bm.ts||0) : 0;
+  const byDate = (a,b) => a.date<b.date ? -1 : a.date>b.date ? 1 : a.ts-b.ts;
+  const buys = S.stx.filter(x => x.sim===n && x.type==='bundle' && x.ts>cut).sort(byDate);
+  const uses = S.stx.filter(x => x.sim===n && x.type==='send' && x.via==='bundle' && x.ts>cut).sort(byDate);
+  const pool = [];
+  if (bm && bm.left>0) pool.push({start:'0000-00-00', end:bm.expiry||'9999-12-31', left:bm.left});
+  buys.forEach(b => pool.push({start:b.date, end:addDays(b.date,29), left:5}));
+  uses.forEach(u => { const p = pool.find(p => p.left>0 && u.date>=p.start && u.date<=p.end); if (p) p.left--; });
+  let left=0, expiry=null;
+  pool.forEach(p => { if (asOf<=p.end && p.left>0){ left+=p.left; if (!expiry || p.end<expiry) expiry=p.end; } });
+  return {left, expiry};
+}
+const bundleLeft = n => bundleInfo(n, today()).left;
+function setBm(s, f, v){
+  if (f==='bl' && v===''){ s.bm = null; return; }
+  const bm = s.bm || {left:0, expiry:''};
+  if (f==='bl') bm.left = parseFloat(v)||0; else bm.expiry = v||'';
+  if (f==='bl' || !bm.ts) bm.ts = Date.now();
+  s.bm = bm;
+}
+function makeSim(e){
+  if (e.kind==='merchant'){
+    const p = MERCH_PRESET[e.num];
+    return {num:e.num, kind:'merchant', prov:'bkash', open:0, lim: p ? p.lim : DEF_MERCH_LIM, dout: p ? p.dout : DEF_MERCH_DOUT};
+  }
+  return {num:e.num, kind:'personal', prov:e.prov, open:0, lim: e.prov==='nagad' ? NAGAD_LIM : DEF_PERSONAL_LIM, dout:0};
+}
+
+/* ---------- sim form ---------- */
+function chargeInfo(t){
+  if (!isSend(t)) return {fee:0, bundle:false};
+  const v=$('sf-fee').value;
+  return v==='bundle' ? {fee:0, bundle:true} : {fee:parseFloat(v)||0, bundle:false};
+}
+function hintFor(n, t){
+  if (!n) return '';
+  if (t==='bundle') return 'বান্ডিল কিনলে ২১ টাকা কাটবে এবং ৫টি সেন্ড মানি বিনা চার্জে যোগ হবে (মেয়াদ ৩০ দিন)';
+  if (!isSend(t)) return '';
+  const i = bundleInfo(n, today());
+  return i.left>0
+    ? 'বান্ডিল বাকি আছে: '+i.left+' টি সেন্ড মানি (চার্জ নেই), মেয়াদ শেষ: '+(i.expiry==='9999-12-31'?'লেখা নেই':bdate(i.expiry))
+    : 'বান্ডিল শেষ বা মেয়াদ উত্তীর্ণ। এখন ৫ বা ১০ টাকা চার্জ কাটবে। নতুন বান্ডিল কিনতে "বান্ডিল কেনা" ধরন বেছে নিন';
+}
+function setDefaultFee(){
+  const n=$('sf-sim').value, m=($('sf-date').value||today()).slice(0,7);
+  let c=0;
+  S.stx.forEach(x => { if (x.sim===n && x.type==='send' && x.date.slice(0,7)===m) c++; });
+  $('sf-fee').value = bundleLeft(n)>0 ? 'bundle' : (c<2 ? '5' : '10');
+}
+function sAdjust(){
+  const t=$('sf-type').value;
+  $('sf-lNum').textContent = (t==='bill'||t==='wifi') ? 'বিল / গ্রাহক নম্বর' : 'অপর নম্বর';
+  $('sf-feeDiv').classList.toggle('hidden', !isSend(t));
+  if (isSend(t)) setDefaultFee();
+  if (t==='bundle') $('sf-amt').value = '21';
+  sWarn();
+}
+function sWarn(){
+  const n=$('sf-sim').value, t=$('sf-type').value, a=parseFloat($('sf-amt').value), date=$('sf-date').value||today();
+  if (!n || !(a>0)){ $('sf-warn').textContent = hintFor(n,t); return; }
+  const ch=chargeInfo(t);
+  const w = warnings(n, t, a, date, ch.fee);
+  if (isSend(t) && ch.bundle){
+    const l=bundleLeft(n);
+    if (l>0) w.unshift('বান্ডিল থেকে কাটবে, বাকি থাকবে '+(l-1)+' বার');
+    else w.unshift('বান্ডিল শেষ। ৫ বা ১০ চার্জ বেছে নিন');
+  } else if (isSend(t) && ch.fee>0) w.unshift('চার্জ ৳ '+money(ch.fee)+' কাটবে');
+  $('sf-warn').textContent = w.join(' · ');
+}
+function fillSimSelects(){
+  const sims = kindSims(curKind);
+  const cur = $('sf-sim').value;
+  const opts = sims.map(s => '<option value="'+esc(s.num)+'">'+esc(s.num)+(s.kind==='merchant'?' (মার্চেন্ট)':'')+(s.prov==='nagad'?' (নগদ)':'')+'</option>').join('');
+  $('sf-sim').innerHTML = opts || '<option value="">আগে সেটিংস থেকে নম্বর যোগ করো</option>';
+  if (cur && sims.some(s=>s.num===cur)) $('sf-sim').value = cur;
+  $('sl-sim').innerHTML = '<option value="">সব নম্বর</option>' + opts;
+}
+function initTypeSelects(){
+  $('af-type').innerHTML = Object.keys(A_TYPES).map(k => '<option value="'+k+'">'+A_TYPES[k]+'</option>').join('');
+  $('al-type').innerHTML = '<option value="">সব ধরন</option>' + Object.keys(A_TYPES).map(k => '<option value="'+k+'">'+A_TYPES[k]+'</option>').join('');
+  const st = Object.keys(S_TYPES).map(k => '<option value="'+k+'">'+S_TYPES[k].n+'</option>').join('');
+  $('sf-type').innerHTML = st;
+  $('sl-type').innerHTML = '<option value="">সব ধরন</option>' + st;
+  $('al-date').value = today();
+  $('sl-date').value = today();
+  $('sf-date').value = today();
+  $('am-month').value = thisMonth();
+  $('sm-month').value = thisMonth();
+}
+
+/* ---------- sim lists / tables ---------- */
+function sList(){
+  const d=$('sl-date').value, sm=$('sl-sim').value, ty=$('sl-type').value;
+  const set = kindSims(curKind).map(s=>s.num);
+  const list = S.stx.filter(x => set.indexOf(x.sim)>-1 && (!d||x.date===d) && (!sm||x.sim===sm) && (!ty||x.type===ty))
+    .sort((a,b)=>b.ts-a.ts);
+  $('sl-body').innerHTML = list.length ? list.map(x => {
+    const info = esc(x.num) + (x.rnd?' <small>(র্যান্ডম)</small>':'') + (x.name?' <small>('+esc(x.name)+')</small>':'') +
+      (x.trx?'<br><small>আইডি: '+esc(x.trx)+'</small>':'') + (x.note?'<br><small>'+esc(x.note)+'</small>':'') +
+      (x.fee?'<br><small>চার্জ ৳ '+money(x.fee)+'</small>':'') + (x.via==='bundle'?'<br><small>বান্ডিল থেকে</small>':'');
+    return '<tr><td>'+bdate(x.date)+'</td><td>'+esc(x.sim)+'</td><td><span class="chip">'+S_TYPES[x.type].n+'</span></td>'+
+      '<td>'+info+'</td><td class="r">'+money(x.amt)+'</td>'+
+      '<td class="r"><button class="btn-ghost sm" data-act="sdel" data-id="'+x.id+'" type="button">✕</button></td></tr>';
+  }).join('') : '<tr><td colspan="6" class="text-center text-slate-500 py-6">কোনো লেনদেন নেই</td></tr>';
+  let tin=0, tout=0;
+  list.forEach(x => { if (S_TYPES[x.type].b>0) tin+=x.amt; else tout+=x.amt; });
+  $('sl-sum').innerHTML = list.length ? '<span class="chip">মোট ইন ৳ '+money(tin)+'</span> <span class="chip">মোট আউট ৳ '+money(tout)+'</span>' : '';
+}
+function sMonthly(){
+  const m=$('sm-month').value||thisMonth();
+  let tu=0, tl=0, rows='';
+  kindSims(curKind).forEach(s => {
+    const used=sumMonth(s.num,m), lim=limitOf(s.num), rem=lim-used;
+    tu+=used; tl+=lim;
+    rows += '<tr><td>'+esc(s.num)+(s.prov==='nagad'?' <span class="chip ng">নগদ</span>':'')+(s.kind==='merchant'?' <small>(মার্চেন্ট)</small>':'')+'</td>'+
+      '<td class="r">'+money(lim)+'</td><td class="r">'+money(used)+'</td><td class="r '+(rem<0?'badc':'good')+'">'+money(rem)+'</td></tr>';
+  });
+  $('sm-body').innerHTML = rows || '<tr><td colspan="4" class="text-center text-slate-500 py-6">কোনো নম্বর নেই</td></tr>';
+  $('sm-total').textContent = bdate(m+'-01').slice(3)+' মাসে মোট ব্যবহার: ৳ '+money(tu)+' · মোট বরাদ্দ: ৳ '+money(tl);
+}
+function renderSims(){
+  if (!S) return;
+  const sims=kindSims(curKind), t=today();
+  $('simTitle').textContent = curKind==='merchant' ? 'বিকাশ মার্চেন্ট' : 'বিকাশ পার্সোনাল';
+  $('drawerCard').classList.toggle('hidden', curKind==='merchant');
+  let tb=0, ts=0, tr=0, tu=0, tl=0, rows='';
+  sims.forEach(s => {
+    const n=s.num, b=simBal(n), merch=s.kind==='merchant';
+    const snd=sumDay(n,t,isSend), rcv=sumDay(n,t,isRecv);
+    const left = merch ? Math.max(0, doutOf(n)-sumDayOut(n,t)) : Math.max(0, capOf(n)-sumDay(n,t,isIn));
+    const lim=limitOf(n), used=sumMonth(n,thisMonth()), rem=lim-used;
+    tb+=b; ts+=snd; tr+=rcv; tu+=used; tl+=lim;
+    rows += '<tr><td>'+bdate(t)+'</td><td>'+(s.prov==='nagad'?'<span class="chip ng">নগদ</span> ':'')+esc(n)+(merch?' <small>(মার্চেন্ট)</small>':'')+'</td>'+
+      '<td class="r">'+money(snd)+'</td><td class="r">'+money(rcv)+'</td>'+
+      '<td class="r '+balClass(b)+'">'+money(b)+'</td><td class="r">'+money(left)+'</td>'+
+      '<td class="r">'+money(lim)+'</td><td class="r">'+money(used)+'</td>'+
+      '<td class="r '+(rem<0?'badc':'good')+'">'+money(rem)+'</td>'+
+      '<td><button class="btn-ghost sm" data-act="det" data-num="'+esc(n)+'" type="button">বিস্তারিত</button></td></tr>';
+  });
+  if (sims.length) rows += '<tr><td><b>মোট</b></td><td></td><td class="r"><b>'+money(ts)+'</b></td><td class="r"><b>'+money(tr)+'</b></td><td class="r"><b>'+money(tb)+'</b></td><td></td><td class="r"><b>'+money(tl)+'</b></td><td class="r"><b>'+money(tu)+'</b></td><td></td><td></td></tr>';
+  $('st-body').innerHTML = rows || '<tr><td colspan="10" class="text-center text-slate-500 py-6">কোনো নম্বর নেই। সেটিংস থেকে নম্বর যোগ করো</td></tr>';
+  const pers = S.sims.filter(s=>s.kind!=='merchant').length, merc = S.sims.length-pers;
+  $('sBal').textContent = '৳ '+money(S.sims.reduce((a,s)=>a+simBal(s.num),0));
+  $('sSims').textContent = pers+' পার্সোনাল · '+merc+' মার্চেন্ট';
+  $('sSend').textContent = '৳ '+money(S.sims.reduce((a,s)=>a+sumDay(s.num,t,isSend),0));
+  $('sRecv').textContent = '৳ '+money(S.sims.reduce((a,s)=>a+sumDay(s.num,t,isRecv),0));
+  $('sMonth').textContent = '৳ '+money(S.sims.reduce((a,s)=>a+sumMonth(s.num,thisMonth()),0));
+  $('sDrawer').textContent = '৳ '+money(S.drawer);
+  $('sDrawer').className = 'text-2xl font-bold mt-1 '+(S.drawer<=0?'warnc':'good');
+  sList(); sMonthly();
+}
+function fillSimSettings(){
+  const isP = curKind==='personal';
+  $('set-personal').classList.toggle('hidden', !isP);
+  $('set-merchant').classList.toggle('hidden', isP);
+  if (isP){
+    $('st-personal').value = S.sims.filter(s=>s.kind!=='merchant'&&s.prov!=='nagad').map(s=>s.num).join('\n');
+    $('st-nagad').value = S.sims.filter(s=>s.kind!=='merchant'&&s.prov==='nagad').map(s=>s.num).join('\n');
+    $('st-cap').value = S.dailyCap;
+    $('st-drawer').value = S.drawer;
+    $('st-cnt').innerHTML = Object.keys(CNT_LABEL).map(k =>
+      '<label class="flex items-center gap-1.5 text-sm bg-white/70 rounded-lg px-2 py-1 border border-slate-200"><input type="checkbox" data-cnt="'+k+'"'+(S.cnt[k]?' checked':'')+'>'+CNT_LABEL[k]+'</label>'
+    ).join('');
+    $('st-bundle').innerHTML = S.sims.filter(s=>s.kind!=='merchant').map(s => {
+      const bm=s.bm||{};
+      return '<tr><td>'+esc(s.num)+'</td>'+
+        '<td><input class="inp" type="number" min="0" step="1" data-sim="'+esc(s.num)+'" data-f="bl" value="'+(s.bm?(+bm.left||0):'')+'" placeholder="0"></td>'+
+        '<td><input class="inp" type="date" data-sim="'+esc(s.num)+'" data-f="be" value="'+esc(bm.expiry||'')+'"></td></tr>';
+    }).join('') || '<tr><td colspan="3" class="text-slate-500">পার্সোনাল নম্বর নেই</td></tr>';
+  } else {
+    $('st-merch').value = S.sims.filter(s=>s.kind==='merchant').map(s=>s.num).join('\n');
+  }
+  $('st-set').innerHTML = kindSims(curKind).map(s =>
+    '<tr><td>'+esc(s.num)+(s.prov==='nagad'?' <span class="chip ng">নগদ</span>':'')+'</td>'+
+    '<td><input class="inp" type="number" step="any" data-sim="'+esc(s.num)+'" data-f="open" value="'+(+s.open||0)+'"></td>'+
+    '<td><input class="inp" type="number" step="any" data-sim="'+esc(s.num)+'" data-f="lim" value="'+(+s.lim||0)+'"></td>'+
+    '<td>'+(s.kind==='merchant'?'<input class="inp" type="number" step="any" data-sim="'+esc(s.num)+'" data-f="dout" value="'+(+s.dout||0)+'">':'—')+'</td>'+
+    '<td><input class="inp" type="number" step="any" data-sim="'+esc(s.num)+'" data-f="pre" value="'+((s.base&&s.base.m===thisMonth())?(+s.base.used||0):'')+'" placeholder="0"></td></tr>'
+  ).join('') || '<tr><td colspan="5" class="text-slate-500">আগে নম্বর সেভ করো</td></tr>';
+}
+function saveSims(){
+  const entries=[];
+  if (curKind==='personal'){
+    parseNums($('st-personal').value).forEach(n => entries.push({num:n, kind:'personal', prov:'bkash'}));
+    parseNums($('st-nagad').value).forEach(n => {
+      if (!entries.some(e=>e.num===n)) entries.push({num:n, kind:'personal', prov:'nagad'});
+    });
+  } else {
+    parseNums($('st-merch').value).forEach(n => entries.push({num:n, kind:'merchant', prov:'bkash'}));
+  }
+  const removed = kindSims(curKind).filter(s => !entries.some(e=>e.num===s.num)).length;
+  if (removed && !confirm(removed+' টি নম্বর তালিকা থেকে সরে যাবে। ওই নম্বরের লেনদেন থেকে যাবে কিন্তু হিসাবে দেখাবে না। নিশ্চিত?')) return;
+  const others = S.sims.filter(s => (curKind==='merchant' ? s.kind!=='merchant' : s.kind==='merchant') && !entries.some(e=>e.num===s.num));
+  const next = entries.map(e => {
+    let s = S.sims.find(x => x.num===e.num);
+    if (s){ s.kind=e.kind; s.prov=e.prov; return s; }
+    return makeSim(e);
+  });
+  S.sims = others.concat(next);
+  save(); fillSimSelects(); fillSimSettings(); refresh();
+}
+
+/* ---------- detail popup ---------- */
+function openDetail(n){
+  const s=findSim(n); if (!s) return;
+  const b=simBal(n); let allS=0, allR=0;
+  S.stx.forEach(x => { if (x.sim!==n) return; if (x.type==='send') allS+=x.amt; if (x.type==='receive') allR+=x.amt; });
+  const used=sumMonth(n,thisMonth()), lim=limitOf(n), rem=lim-used, merch=s.kind==='merchant';
+  const bi=bundleInfo(n,today());
+  const cell=(l,v,c)=>'<div class="bg-white/70 rounded-xl p-3 border border-slate-100"><small class="text-slate-500">'+l+'</small><div class="font-bold '+(c||'')+'">'+v+'</div></div>';
+  let h='<h3 class="font-bold text-lg mb-3">'+esc(n)+' <small class="text-slate-500">('+(merch?'মার্চেন্ট':'পার্সোনাল')+')</small></h3>';
+  h+='<div class="grid grid-cols-2 gap-2">'+
+    cell('এখনকার ব্যালেন্স','৳ '+money(b),balClass(b))+
+    cell('মাসে ব্যবহৃত / লিমিট','৳ '+money(used)+' / '+money(lim))+
+    cell('মাসে বাকি','৳ '+money(rem),rem<0?'badc':'good')+
+    cell('আজ সেন্ড মানি','৳ '+money(sumDay(n,today(),isSend)))+
+    cell('আজ রিসিভ মানি','৳ '+money(sumDay(n,today(),isRecv)))+
+    cell('মোট সেন্ড মানি (সব সময়)','৳ '+money(allS))+
+    cell('মোট রিসিভ মানি (সব সময়)','৳ '+money(allR))+
+    (merch?'':cell('বান্ডিল বাকি', bi.left+' টি'+(bi.left>0?' · মেয়াদ '+(bi.expiry==='9999-12-31'?'লেখা নেই':bdate(bi.expiry)):'')))+
+    '</div>';
+  $('modalBody').innerHTML = h;
+  $('modal').classList.remove('hidden');
+}
+function closeModal(){ $('modal').classList.add('hidden'); }
+
+/* ---------- view switching & refresh ---------- */
+function showView(v){
+  const isAg = v==='bkash' || v==='nagad';
+  if (isAg) curAg = v; else curKind = v==='merchant' ? 'merchant' : 'personal';
+  $('view-agent').classList.toggle('hidden', !isAg);
+  $('view-sims').classList.toggle('hidden', isAg);
+  document.querySelectorAll('.menu-btn').forEach(b => {
+    const on = b.getAttribute('data-view')===v;
+    b.classList.toggle('on', on);
+  });
+  if (isAg){ fillAgForms(); renderAgent(); }
+  else { fillSimSelects(); fillSimSettings(); renderSims(); }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function refresh(){
+  if (!S) return;
+  if (!$('view-agent').classList.contains('hidden')) renderAgent();
+  else renderSims();
+}
+
+/* ---------- events ---------- */
+$('af-type').addEventListener('change', () => { aComTouched=false; aAdjust(); });
+$('af-amt').addEventListener('input', aAutoCom);
+$('af-com').addEventListener('input', () => { aComTouched=true; });
+$('af-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const t=$('af-type').value, a=parseFloat($('af-amt').value), btb=isBtb(t);
+  if (!(a>0)){ alert('সঠিক টাকার পরিমাণ দিন'); return; }
+  let c=0;
+  if (!btb){
+    if ($('af-com').value!=='') c = parseFloat($('af-com').value)||0;
+    else if (isCashT(t)) c = r2(a/1000*aRate(t));
+  }
+  S.atx.push({
+    id:uid(), ts:Date.now(), agent:curAg, type:t,
+    num: btb ? '' : $('af-num').value.trim(),
+    name: btb ? '' : $('af-name').value.trim(),
+    method: btb ? $('af-method').value : '',
+    trx: $('af-trx').value.trim(), amt:a, com:c, note:$('af-note').value.trim()
+  });
+  save();
+  ['af-amt','af-com','af-num','af-name','af-trx','af-note'].forEach(id => $(id).value='');
+  aComTouched=false; aAdjust(); refresh();
+  $('af-num').focus();
+});
+$('al-date').addEventListener('input', aList);
+$('al-type').addEventListener('change', aList);
+$('al-q').addEventListener('input', aList);
+$('am-month').addEventListener('input', aMonthly);
+
+$('sf-date').addEventListener('input', () => { setDefaultFee(); sWarn(); });
+$('sf-sim').addEventListener('change', () => { setDefaultFee(); sWarn(); });
+$('sf-type').addEventListener('change', sAdjust);
+$('sf-amt').addEventListener('input', sWarn);
+$('sf-fee').addEventListener('change', sWarn);
+$('sf-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const n=$('sf-sim').value, t=$('sf-type').value, a=parseFloat($('sf-amt').value), date=$('sf-date').value||today();
+  if (!n){ alert('আগে সেটিংস থেকে নম্বর যোগ করো'); return; }
+  if (!(a>0)){ alert('সঠিক টাকার পরিমাণ দিন'); return; }
+  const ch=chargeInfo(t);
+  if (ch.bundle && bundleLeft(n)<=0){ alert('বান্ডিল শেষ। সেন্ড মানির চার্জ ৫ বা ১০ বেছে নিন'); return; }
+  const w=warnings(n, t, a, date, ch.fee);
+  if (w.length && !confirm(w.join('\n')+'\n\nতবুও সেভ করবে?')) return;
+  let num=$('sf-num').value.trim(), rnd=false;
+  if (!num && t!=='bill' && t!=='wifi' && t!=='bundle'){ num=randBd(); rnd=true; }
+  S.stx.push({
+    id:uid(), ts:Date.now(), date, sim:n, type:t, amt:a, fee:ch.fee,
+    via: ch.bundle ? 'bundle' : '', num, rnd,
+    name:$('sf-name').value.trim(), trx:$('sf-trx').value.trim(), note:$('sf-note').value.trim()
+  });
+  save();
+  ['sf-amt','sf-num','sf-name','sf-trx','sf-note'].forEach(id => $(id).value='');
+  sAdjust(); refresh();
+});
+$('sl-date').addEventListener('input', sList);
+$('sl-sim').addEventListener('change', sList);
+$('sl-type').addEventListener('change', sList);
+$('sm-month').addEventListener('input', sMonthly);
+
+/* settings inputs (agent + sims) */
+document.addEventListener('input', e => {
+  const el=e.target;
+  if (!S) return;
+  if (el.dataset && el.dataset.sim && el.dataset.f){
+    const s=findSim(el.dataset.sim); if (!s) return;
+    const f=el.dataset.f;
+    if (f==='bl' || f==='be') setBm(s, f, el.value);
+    else if (f==='pre'){
+      if (el.value==='') delete s.base; else s.base = {m:thisMonth(), used:parseFloat(el.value)||0};
+    }
+    else s[f] = parseFloat(el.value)||0;
+    save(); refresh(); return;
+  }
+  switch (el.id){
+    case 'as-oc': S.ag[curAg].oCash = parseFloat(el.value)||0; save(); refresh(); break;
+    case 'as-of': S.ag[curAg].oFloat = parseFloat(el.value)||0; save(); refresh(); break;
+    case 'as-rin': S.rates[curAg].cashin = parseFloat(el.value)||0; aAutoCom(); save(); refresh(); break;
+    case 'as-rout': S.rates[curAg].cashout = parseFloat(el.value)||0; aAutoCom(); save(); refresh(); break;
+    case 'st-cap': S.dailyCap = parseFloat(el.value)||0; save(); refresh(); break;
+    case 'st-drawer': S.drawer = parseFloat(el.value)||0; save(); refresh(); break;
+  }
+});
+document.addEventListener('change', e => {
+  const el=e.target;
+  if (el.dataset && el.dataset.cnt){ S.cnt[el.dataset.cnt]=el.checked; save(); refresh(); }
+});
+
+/* click delegation */
+document.addEventListener('click', e => {
+  if (e.target.id==='modal'){ closeModal(); return; }
+  const el = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!el) return;
+  const act = el.dataset.act;
+  if (act==='view') showView(el.dataset.view);
+  else if (act==='adel'){
+    if (confirm('এই লেনদেনটি মুছবেন?')){ S.atx = S.atx.filter(x => String(x.id)!==el.dataset.id); save(); refresh(); }
+  }
+  else if (act==='sdel'){
+    if (confirm('এই লেনদেনটি মুছবেন?')){ S.stx = S.stx.filter(x => String(x.id)!==el.dataset.id); save(); refresh(); }
+  }
+  else if (act==='det') openDetail(el.dataset.num);
+  else if (act==='closeModal' || act==='closeModalBg') closeModal();
+  else if (act==='agBal') agSetBal();
+  else if (act==='saveSims') saveSims();
+  else if (act==='agClear'){
+    if (confirm('এই এজেন্টের সব লেনদেন মুছে যাবে। নিশ্চিত?')){ S.atx = S.atx.filter(x => x.agent!==curAg); save(); refresh(); }
+  }
+  else if (act==='backup') downloadBackup();
+  else if (act==='logout') logout();
+});
+
+function downloadBackup(){
+  if (!S) return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));
+  a.download='bkash-hisab-backup-'+today()+'.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ---------- auth ---------- */
+function showApp(on){
+  $('auth-screen').classList.toggle('hidden', on);
+  $('app').classList.toggle('hidden', !on);
+  $('app').classList.toggle('flex', on);
+}
+async function onSignedIn(u){
+  if (user && user.id===u.id && S) return;
+  user = u;
+  setStatus('লোড হচ্ছে…');
+  await loadState();
+  showApp(true);
+  initTypeSelects();
+  fillSimSelects();
+  showView(curAg==='nagad' ? 'nagad' : (curKind==='merchant' ? 'merchant' : 'bkash'));
+  setStatus('সব সেভ হয়েছে');
+}
+function onSignedOut(){
+  user = null; S = null;
+  showApp(false);
+}
+async function logout(){
+  if (dirty) await pushNow();
+  if (sb) await sb.auth.signOut();
+}
+async function doLogin(){
+  const email=$('loginEmail').value.trim(), pass=$('loginPass').value;
+  $('loginErr').textContent='';
+  if (!sb){ $('loginErr').textContent='সার্ভারের সাথে যোগ হতে পারেনি।'; return; }
+  const { error } = await sb.auth.signInWithPassword({email, password:pass});
+  if (error){ $('loginErr').textContent='লগইন হয়নি। ইমেইল বা পাসওয়ার্ড ভুল হতে পারে।'; return; }
+  $('loginPass').value='';
+}
+$('loginBtn').addEventListener('click', doLogin);
+$('loginPass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+window.addEventListener('beforeunload', e => { if (dirty){ e.preventDefault(); e.returnValue=''; } });
+
+function tick(){
+  const d=new Date();
+  $('clockTxt').textContent = d.toLocaleDateString('en-GB')+'  '+d.toLocaleTimeString('en-GB');
+}
+tick(); setInterval(tick, 1000);
+
+async function init(){
+  if (!window.supabase){ $('loginErr').textContent='সার্ভার লোড হয়নি। ইন্টারনেট চেক করো।'; return; }
+  if (SUPABASE_URL.indexOf('YOUR-')>-1){ $('loginErr').textContent='কোডে Supabase URL ও key বসানো হয়নি।'; return; }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth:{persistSession:true}});
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session && session.user) onSignedIn(session.user);
+    else onSignedOut();
+  });
+  const { data } = await sb.auth.getSession();
+  if (!data.session) onSignedOut();
+}
+init();
+
+})();
+</script>
+</body>
+</html>
